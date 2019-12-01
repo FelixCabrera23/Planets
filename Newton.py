@@ -92,10 +92,34 @@ def Grafica(sis):
     ax = plt.gca()
     for i in range(len(sis)):
         ax.add_patch(sis[i].grafica())
-    ax.set(xlabel = '$L x10^{23} [m]$', ylabel = '$L x10^{23} [m]$',title = 'Sistema Planetario')    
+    ax.set(xlabel = '$L x10^{23} [m]$', ylabel = '$L x10^{23} [m]$',
+           title = 'Sistema Planetario')    
     plt.tight_layout()
     plt.axis([-L,L,-L,L])
     plt.show()
+    
+def Vel_graf(sis):
+    "esta genera una grafica con las velocidades"
+    x = []
+    y = []
+    V = []
+    U = []
+    for planet in sis:
+        x.append(planet.x)
+        y.append(planet.y)
+        U.append(planet.vx)
+        V.append(planet.vy)
+    fig, ax = plt.subplots()
+    ax.set(xlabel = '$L x10^{23} [m]$', 
+           ylabel = '$L x10^{23} [m]$',title = 'Velocidades') 
+    ax.set_aspect('equal')
+    ax.quiver(x,y,U,V)
+    plt.figure(figsize=(6,6))
+    plt.tight_layout()
+    plt.axis([-L,L,-L,L])
+    plt.show()
+    return
+    
     
 def Guardar_fig(sis,nombre):
     plt.figure(figsize=(6,6))
@@ -103,10 +127,11 @@ def Guardar_fig(sis,nombre):
     ax = plt.gca()
     for i in range(len(sis)):
         ax.add_patch(sis[i].grafica())
-    ax.set(xlabel = '$L x10^{23} [m]$', ylabel = '$L x10^{23} [m]$',title = 'Sistema Planetario')    
+    ax.set(xlabel = '$L x10^{23} [m]$', 
+           ylabel = '$L x10^{23} [m]$',title = 'Sistema Planetario')    
     plt.tight_layout()
     plt.axis([-L,L,-L,L])
-    plt.savefig('%s.jpeg' %(nombre),dpi = 200)
+    plt.savefig('%s.jpeg' %(nombre),dpi = 100)
 
 def F(m1,m2):
     "Define la fuerza entre dos particulas"
@@ -114,11 +139,6 @@ def F(m1,m2):
     F =G*(m1.m*m2.m)/r2
     return(F)
 
-def V(m1,m2):
-    "Define el potencial entre dos particulas"
-    r = np.sqrt((m1.x-m2.x)**2+(m1.y-m2.y)**2)
-    V = - G(m1.m*m2.m)/r
-    return(V)
     
 def Ek(Planeta):
     "Esta función define la energia cinetica de las particulas"
@@ -143,7 +163,7 @@ def aceleracion(Planetan,sistema):
         Fn = F(Planetan,sistema[i])/Planetan.m
         ax = ax + Fn*(x/s)
         ay = ay + Fn*(y/s)
-        if s < r:
+        if s < (3*r/4):
             rn = np.sqrt(Planetan.r**2+sistema[i].r**2)
             M = Planetan.m + sistema[i].m
             vxn = (Planetan.m*Planetan.vx + sistema[i].m*sistema[i].vx)/M
@@ -167,9 +187,11 @@ def mov (sis):
     positions = []
     vel = []
     k = 0
+    i = 0
+    while i < len(sis):
+        acel.append(aceleracion(sis[i],sis))
+        i += 1
     while k < len(sis):
-
-        acel.append(aceleracion(sis[k],sis))
         positions.append([sis[k].x,sis[k].y])        
         vel.append([sis[k].vx,sis[k].vy])
         k+=1
@@ -198,35 +220,35 @@ def ran_sis (planetas,masas,vel_ran):
     """
     
     sistema = [Planeta(0,0,50,19000000,0,0,0)]
-    random.seed(1991)
+    random.seed(1999)
+    np.random.seed(1999)
     for i in range(planetas):
         ran1 = random.random()
         m1 = ran1*masas
         r1 = ran1*10
-        ran2 = random.randrange(60,790)
+        ran2 = random.randrange(60,750)
         ang = random.random()*2*np.pi
         x1 = ran2*np.cos(ang)
         y1 = ran2*np.sin(ang)
-        ang2 = ang + np.pi*0.5
+        ang2 = -ang + np.pi*0.5
         if vel_ran == 0:
             vel = np.sqrt((G*19000000)/ran2)
-        if vel_ran == 1:
-            vel = (np.sqrt((G*19000000)/ran2))*random.randrange(0.5,1.5)
+        elif vel_ran == 1:
+            vel = (np.sqrt((G*19000000)/ran2))*(np.random.normal(1.0,0.1))
         else:
             vel =random.random()*0.6
-        vx1 = vel*np.cos(ang2)
+        vx1 = -vel*np.cos(ang2)
         vy1 = vel*np.sin(ang2)
         num = i +1
         P1 = Planeta(x1,y1,r1,m1,vx1,vy1,num)
         sistema.append(P1)
-        
     return(sistema)    
     
 def simul(pasos,sistema):
     sisu = sistema[:]
     for i in range(pasos):
-        Grafica(sisu)
-#        Guardar_fig(sisu,str(i))
+#        Grafica(sisu)
+        Guardar_fig(sisu,str(i))
         for j in range(100):
             sisu = mov(sisu)
     return(sisu)
@@ -251,3 +273,5 @@ sistema5 = [Planeta(-100,-100,20,1000000,0.05,0.05,0),Planeta(100,100,20,1000000
 
 #Planetas con velocidades aleatoreas    
 sistema6 = ran_sis(50,100000,2)
+#sistema planetario aleatoreo
+sistema7 = ran_sis(10,80,0)

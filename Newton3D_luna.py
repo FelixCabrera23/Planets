@@ -9,22 +9,17 @@ asesor: Anibal Sierra
 Programa que simula la gravitación segun Newton en 3Dimensiones
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
-import random
 from time import time
 import sys
 
 
 "Variables importantes"
-"Distancias en m x10^9"
+"Distancias en m x10^6"
 "Masa en kg x 10 ^23"
-"Fuerza en N x 10 ^28"
-"Velocidad en m x 10^9 /s x 10^4 "
-"Nota: un paso simulado son 10000 segundos(2.7 horas)"
+"Tiempo en s X 10^2"
 
-G = 6.627*10**(-7) # Constante de graviatación universal
-L = 800 # Limites de la grafica
+G = 0.06627 # Constante de graviatación universal
 
 def progress(count, total, status=''):
     " Barra de progreso, ayuda a determinar el porcentaje del proceso"
@@ -38,7 +33,7 @@ def progress(count, total, status=''):
     sys.stdout.flush()
 
 class Planeta(object):
-    "Estas son planetas con masa y radio, Aunque esta vez no "
+    "Estas son planetas con masa y radio"
     
     def __init__(self,x=0,y=0,z=0,r=0,m=0,vx=0,vy=0,vz=0,n=0):
         "Esto define las propiedades de cada particulas"
@@ -139,7 +134,7 @@ def mov (sis):
         y= sis[k].y
         z= sis[k].z
         ref = abs(x)+abs(y)+abs(z)
-        if ref > 1200:
+        if ref > (10**6):
             sis.pop(k)
             while j < len(sis):
                 sis[j].n = j
@@ -165,47 +160,6 @@ def mov (sis):
         l+=1
         
     return(sis)
-    
-def ran_sis (planetas,masas,vel_ran):
-    """Genera un sistema con planetas aleatoreos,
-        Los planetas son generados siguiendo una distribución normal
-        masa aleatorea y velocidad aleatorea, si se desea.
-        
-        vel_ran = 0, velocidades proporcionales al radio
-        vel_ran = 1, velocidades aleatoreas proporcionales al radio
-        vel_ran = 2, velocidades totalmente aleatoreas.
-    """
-    
-    sistema = [Planeta(0,0,0,0.7,19000000,0,0,0,0)]
-    random.seed(1999)
-    np.random.seed(1999)
-    for i in range(planetas):
-        ran1 = random.random()
-        m1 = ran1*masas
-        r1 = ran1*10**-3
-        S = 60+abs(np.random.normal(0,400))
-        ang1 = random.random()*2*np.pi #Angulo asimutal
-        angpolar = np.random.normal()*np.pi #Angulo polar
-        r = S*np.sin(angpolar)
-        x1 = r*np.cos(ang1)
-        y1 = r*np.sin(ang1)
-        z1 = S*np.cos(angpolar)
-        ang2 = -ang1 + np.pi*0.5
-        if vel_ran == 0:
-            vel = np.sqrt((G*19000000)/S)
-            vz1 = 0
-        elif vel_ran == 1:
-            vel = np.sqrt((G*19000000)/S)*(np.random.normal(1.0,0.1))
-            vz1 = 0
-        elif vel_ran ==2:
-            vel =random.random()*0.6
-            vz1 =random.random()*0.07
-        vx1 = -vel*np.cos(ang2)
-        vy1 = vel*np.sin(ang2)
-        num = i +1
-        P1 = Planeta(x1,y1,z1,r1,m1,vx1,vy1,vz1,num)
-        sistema.append(P1)
-    return(sistema)    
     
 def simul(pasos,sistema):
     """
@@ -234,6 +188,7 @@ def simul(pasos,sistema):
         for j in range(10):
             sisu = mov(sisu)
     file.close()
+    print('\n fin \n')
     return(sisu)
     
 #Para caracterizar
@@ -271,7 +226,5 @@ def tiempo(a,N):
 #plt.tight_layout()
 #plt.savefig('tmpvspla.jpeg',dpi = 200)
  
-Sistema1 = [Planeta(0,0,0,6.371*10**-3,59.7,0,0,0,0),Planeta(0.384402,0,0,1.7371*10**-3,0.7349,0,-0.010145018225209327,0,1)]
+Sistema1 = [Planeta(0,0,0,6.371,59.7,0,0,0,0),Planeta(354.590,0,31.646,1.737,0.734,0,0.108,0,1),Planeta(1000,1000,1000,0.002,0.0000001,-0.01,-0.01,0)]
 
-simul(1000,Sistema1)
-#z = 3*10**-6
